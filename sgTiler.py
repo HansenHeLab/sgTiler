@@ -40,6 +40,14 @@ args = parser.parse_args()
 FORMAT = ''
 log.basicConfig(filename=args.output + '.report.txt', filemode = 'w', format=FORMAT, level=args.verbose)
 
+# set up logging to console
+console = log.StreamHandler()
+console.setLevel(log.DEBUG)
+# add the handler to the root logger
+log.getLogger('').addHandler(console)
+
+logger = log.getLogger(__name__)
+
 chrs=[]
 for i in range(1,22):
 	chrs.append("chr" + str(i))
@@ -479,6 +487,7 @@ def find_otp(input_seqs):
 
 
 def main():
+        log.info(args.GTF)
 	seq_name = None
 	input_seqs = {}
 	seq_name = ''
