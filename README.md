@@ -10,7 +10,7 @@ sgTiler requires python 2.7+ and bowtie installed in the system.
 
 2. Install bowtie 1.x. Please refer to http://bowtie-bio.sourceforge.net/manual.shtml#obtaining-bowtie for bowtie installation. **Note:**  path to bowtie must be in the PATH variable, i.e., the command `bowtie` must be executable from any location. Easiest way to do that is to download the appropriate version of bowtie from https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/ to where you downloaded sgTiler.py and make the file executable. You should download [bowtie-1.2.2-mingw-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-mingw-x86_64.zip/download) for Windows computer, [bowtie-1.2.2-macos-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-macos-x86_64.zip/download) for Mac and [bowtie-1.2.2-linux-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-linux-x86_64.zip/download) for Linux.
 
-3. Download bowtie genome index file from [here](ftp://ftp.ccb.jhu.edu/pub/data/bowtie_indexes/). E.g., for Hg19, [download this file](ftp://ftp.ccb.jhu.edu/pub/data/bowtie_indexes/hg19.ebwt.zip) and unzip in the current directory.
+3. Download bowtie genome index file from [here](<ftp://ftp.ccb.jhu.edu/pub/data/bowtie_indexes/>). E.g., for Hg19, [download this file](ftp://ftp.ccb.jhu.edu/pub/data/bowtie_indexes/hg19.ebwt.zip) and unzip in the current directory.
 
 3. Download [exons.zip](https://github.com/HansenHeLab/sgTiler/blob/master/exons.zip) in the current directory and unzip.
 
