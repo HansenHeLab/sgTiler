@@ -8,7 +8,7 @@ sgTiler requires python 2.7+ and bowtie installed in the system.
 
 1. Download sgTiler.py
 
-2. Install bowtie 1.x. Please refer to http://bowtie-bio.sourceforge.net/manual.shtml#obtaining-bowtie for bowtie installation. **Note:**  path to bowtie must be in the `PATH` variable, i.e., the command `bowtie` must be executable from any location. Easiest way to do that is to download the appropriate version of `bowtie` from [here](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/) to where you downloaded sgTiler.py and make the file executable. You should download [bowtie-1.2.2-mingw-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-mingw-x86_64.zip/download) for Windows computer, [bowtie-1.2.2-macos-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-macos-x86_64.zip/download) for Mac and [bowtie-1.2.2-linux-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-linux-x86_64.zip/download) for Linux.
+2. Install bowtie 1.x if not already installed. Please refer to http://bowtie-bio.sourceforge.net/manual.shtml#obtaining-bowtie for bowtie installation. Easiest way to do that is to download the appropriate version of `bowtie` from [here](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/), unzip and provide the path to `bowtie` file in `--bowtie-path` argument. Please note that you don't have to provide the `--bowtie-path` if `bowtie` is already installed in your system and can be run in command line from any directory. You should download [bowtie-1.2.2-mingw-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-mingw-x86_64.zip/download) for Windows computer, [bowtie-1.2.2-macos-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-macos-x86_64.zip/download) for Mac and [bowtie-1.2.2-linux-x86_64.zip](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-linux-x86_64.zip/download) for Linux.
 
 3. Download bowtie genome index file from ftp://ftp.ccb.jhu.edu/pub/data/bowtie_indexes/. E.g., for Hg19, download this file: ftp://ftp.ccb.jhu.edu/pub/data/bowtie_indexes/hg19.ebwt.zip and unzip in the current directory.
 
@@ -46,6 +46,7 @@ The sgTiler.py has the following command options:
 --dhs           Required. Path to regulatory regions bed file 
 --gtf           Required. Path to exon bed file 
 --output        Required. Output prefix
+--bowtie-path   Optional. If bowtie is not installed, you can download bowtie and provide the path to the bowtie file. E.g., ./bowtie-1.2.2-macos-x86_64/bowtie
 --pam           PAM sequence. Default: NGG
 --gc-min        Minimum GC content in percentage. Default: 20
 --gc-max        Maximum GC content in percentage. Default: 80
@@ -60,6 +61,7 @@ The sgTiler.py has the following command options:
 --optimize-off  Do not perform optimization
 --distribution-off Do not filter for distribution
 --save-tmp      Save all temporary files
+--pam-off       Skips writing the PAM sequence to the output file
 -v              Turn on verbosity
 -h              Show command help 
 ```
