@@ -23,6 +23,7 @@ parser.add_argument('--terminator', default='UUAUCAACUUGAAAAAGUGGCACCGAGUCGGUGCU
 parser.add_argument('--strand', default='both', help='Strand to find the sgRNAs. Options: positive, negative or both. Default: both')
 parser.add_argument('--length', '-l', type=int, default=19, help='Length of sgRNA without the PAM. Default: 19')
 parser.add_argument('--bowtie-index', help='Bowtie index')
+parser.add_argument('--bowtie-path', help='Path to bowtie file')
 parser.add_argument('--dhs', help='Path to DHS file')
 parser.add_argument('--missmatch', default=2, help='Minimum missmatch in offtargets')
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
@@ -35,6 +36,12 @@ parser.add_argument('--save_tmp', help="Save the temporary files.", action="stor
 parser.add_argument('--dir', default="tmp", help="Directory to store the figures")
 parser.add_argument('--pam-off', action="store_true", help='Do not write PAM sequences to file')
 
+#show usage if no argument passed
+if len(sys.argv) < 2:
+    parser.print_usage()
+    sys.exit(0)
+
+#parse arguments
 args = parser.parse_args()
 
 #FORMAT = '%(asctime)-15s %(message)s'
@@ -48,6 +55,13 @@ console.setLevel(log.DEBUG)
 log.getLogger('').addHandler(console)
 
 logger = log.getLogger(__name__)
+
+#quit of bwa index not found 
+if os.path.isfile(args.bowtie_index + '.1.ebwt'):
+    log.info("Bowtie index found")
+else:
+    log.info("Bowtie index file not found")
+    sys.exit(0)
 
 chrs=[]
 for i in range(1,22):
@@ -244,24 +258,48 @@ def findSg(id, sequence, output_fa):
 
 
 def filter_sg(input_seqs, sgrna_fasta_file):
+    if args.bowtie_path:
+        if os.path.isfile(args.bowtie_path):
+            cmd = "python %s -v %d %s %s -f --quiet -p %d" % (args.bowtie_path, args.missmatch - 1, args.bowtie_index, sgrna_fasta_file, args.nthreads)
+        else:
+            log.info("Bowtie file not found in" + args.bowtie_path)
+    else:
 	cmd = "bowtie -v %d %s %s -f --quiet -p %d"% (args.missmatch - 1, args.bowtie_index, sgrna_fasta_file, args.nthreads)
-	bwt_output = subprocess.check_output(shlex.split(cmd))
-	bwt_output = bwt_output.strip()
-	for match in bwt_output.split('\n'):
-		match = match.strip()
-		words = match.split('\t')
-		ids = words[0].split('_')
-		if int(words[6]) > 0:
-			try:
-				del input_seqs[ids[0]]['sgRNAs'][words[0]]
-			except:
-				pass
+
+    try:
+        bwt_output = subprocess.check_output(shlex.split(cmd))
+    except:
+        log.info("Could not run bowtie. Please make sure you can run the command bowtie from your terminal/cmd or you have the program bowtie in your current directory")
+        sys.exit(0)
+
+    bwt_output = bwt_output.strip()
+    for match in bwt_output.split('\n'):
+            match = match.strip()
+            words = match.split('\t')
+            ids = words[0].split('_')
+            if int(words[6]) > 0:
+                    try:
+                            del input_seqs[ids[0]]['sgRNAs'][words[0]]
+                    except:
+                            pass
 
 
 def run_bowtie(fa, output_file):
-	cmd = "bowtie %s %s -f -a -v 3 -y --suppress 6,7 --quiet -p %d"% (args.bowtie_index, fa, args.nthreads)
-	with open(output_file, 'w') as f:
-		subprocess.call(shlex.split(cmd), stdout = f)
+    if args.bowtie_path:
+        if os.path.isfile(args.bowtie_path):
+            cmd = "python %s %s %s -f -a -v 3 -y --suppress 6,7 --quiet -p %d" % (args.bowtie_path, args.bowtie_index, fa, args.nthreads)
+        else:
+            log.info("Bowtie file not found in" + args.bowtie_path)
+    else:
+        cmd = "bowtie %s %s -f -a -v 3 -y --suppress 6,7 --quiet -p %d" % (args.bowtie_index, fa, args.nthreads)
+
+    with open(output_file, 'w') as f:
+        try:
+            subprocess.call(shlex.split(cmd), stdout = f)
+        except:
+            log.info("Could not run bowtie. Please make sure you can run the command bowtie from your terminal/cmd or you have the program bowtie in your current directory")
+            sys.exit(0)
+
 
 
 def load_tsv(file_path):
