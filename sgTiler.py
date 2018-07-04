@@ -21,7 +21,7 @@ parser.add_argument('-n', '--nthreads', type=int, default=4, help='No. of thread
 parser.add_argument('--handle', default='GUUUUAGAGCUAGAAAUAGCAAGUUAAAAUAAGGCUAGUCCG', help='dCas9 handle sequence. Default: GUUUUAGAGCUAGAAAUAGCAAGUUAAAAUAAGGCUAGUCCG')
 parser.add_argument('--terminator', default='UUAUCAACUUGAAAAAGUGGCACCGAGUCGGUGCUUUUUUU', help='Terminator sequence. Default: UUAUCAACUUGAAAAAGUGGCACCGAGUCGGUGCUUUUUUU')
 parser.add_argument('--strand', default='both', help='Strand to find the sgRNAs. Options: positive, negative or both. Default: both')
-parser.add_argument('--length', '-l', default=19, help='Length of sgRNA without the PAM. Default: 19')
+parser.add_argument('--length', '-l', type=int, default=19, help='Length of sgRNA without the PAM. Default: 19')
 parser.add_argument('--bowtie-index', help='Bowtie index')
 parser.add_argument('--dhs', help='Path to DHS file')
 parser.add_argument('--missmatch', default=2, help='Minimum missmatch in offtargets')
@@ -33,6 +33,7 @@ parser.add_argument('--optimize-off', help="Optimization off.", action="store_tr
 parser.add_argument('--distribution-off', help="Distribution filtering off.", action="store_true")
 parser.add_argument('--save_tmp', help="Save the temporary files.", action="store_true")
 parser.add_argument('--dir', default="tmp", help="Directory to store the figures")
+parser.add_argument('--pam-off', action="store_true", help='Do not write PAM sequences to file')
 
 args = parser.parse_args()
 
@@ -170,7 +171,7 @@ def calculate_efficiency(seq):
 		k=t[tr]+str(i)
 		score+=sn.get(k,0) #add value from single nucleotide, if not available, add 0
 	#add di-nucleotide score
-	for i in range(spacer_length,len(seq)+spacer_length,2):
+	for i in range(spacer_length,len(seq)-1+spacer_length,2):
 		tr=i-spacer_length
 		k=t[tr]+t[tr+1]+str(i)
 		score+=dn.get(k,0)
@@ -484,6 +485,12 @@ def find_otp(input_seqs):
  		for k,v in input_seqs[seq]['sgRNAs'].items():
  			input_seqs[seq]['sgRNAs'][k]['OTP'] = calculate_otp(v['GTF'], v['DHS'], max_gtf, max_dhs)
 
+def set_pam_out(v):
+	if not args.pam_off:
+		write_pam = v['sequence']
+	else:
+		write_pam = v['sequence'][:-len(args.PAM)]
+	return write_pam
 
 
 def main():
@@ -549,18 +556,20 @@ def main():
 	 		sg_per_100bp.append(len(input_seqs[seq]['sgRNAs_filtered']) * 100 / float(len(input_seqs[seq]['sequence'])))
 	 		l.write("%s\t%d\t%d\t%.2f\t%d\t%.2f\n"% (seq, len(input_seqs[seq]['sgRNAs']), len(input_seqs[seq]['sgRNAs_filtered']), input_seqs[seq]['bp_coverage'], len(input_seqs[seq]['sgRNAs_filtered']), len(input_seqs[seq]['sgRNAs_filtered']) * 100 / float(len(input_seqs[seq]['sequence']))))
 	 		for k,v in input_seqs[seq]['sgRNAs_filtered'].items():
+	 			seq_processing = set_pam_out(v)
 	 			f.write(seq + '\t' +
 	 				str(v['pos_start']) + '\t' +
 	 				str(v['pos_end']) + '\t' +
 	 				k + '\t' +
-	 				v['sequence'] + '\t' +
+	 				seq_processing + '\t' +
 	 				"%.2f" % v['efficiency'] + '\t' + "%.2f" % v['OTP'] + '\n')
  			for k,v in input_seqs[seq]['sgRNAs'].items():
+ 				seq_processing = set_pam_out(v)
 	 			a.write(seq + '\t' +
 	 				str(v['pos_start']) + '\t' +
 	 				str(v['pos_end']) + '\t' +
 	 				k + '\t' +
-	 				v['sequence'] + '\t' +
+	 				seq_processing + '\t' +
 	 				"%.2f" % v['efficiency'] + '\t' + "%.2f" % v['OTP'] + '\n')
 
 	log.info("\nStatistics:\n\tTotal sgRNA: %d\n\tMean sgRNA/region: %.2f\n\tMean sgRNA/100bp: %.2f\n\tRegions with <50%% covered by sgRNAs: %d\n\tAverage coverage (spacer/bp): %.2f" % (count_filtered_sg(input_seqs), sum(no_of_sg)/float(len(no_of_sg)), sum(sg_per_100bp)/float(len(sg_per_100bp)), sum(1 for x in bp_coverage if x < 0.5), sum(bp_coverage)/float(len(bp_coverage))))
