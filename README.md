@@ -35,7 +35,7 @@ sgTiler requires four input files:
 
 ### Example run command
 ```bash
-python sgTiler.py -i input.fa --bowtie-index hg19.ebwt/hg19 --dhs -wgEncodeRegDnaseClusteredV3.consensus.simplified.bed -gtf allExons.sorted.merged.gencodev19.hg19.bed --verbose --dir output_boxplots --output sgTiler_output
+python sgTiler.py -i input.fa --bowtie-index hg19.ebwt/hg19 --dhs wgEncodeRegDnaseClusteredV3.consensus.simplified.bed --gtf allExons.sorted.merged.gencodev19.hg19.bed --verbose --dir output_boxplots --output sgTiler_output
 ```
 
 ### Command options
