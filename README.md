@@ -60,7 +60,7 @@ The sgTiler.py has the following command options:
 --plot-off      Do not generate plots
 --optimize-off  Do not perform optimization
 --distribution-off Do not filter for distribution
---save-tmp      Save all temporary files
+--save_tmp      Save all temporary files
 --pam-off       Skips writing the PAM sequence to the output file
 -v              Turn on verbosity
 -h              Show command help 
@@ -84,6 +84,9 @@ The tool output four text files and two pdf files:
 5. .sgrna_count.pdf - graphical summaries of no. of sgRNAs and
 
 6. .bp_coverage.pdf - sequence coverage per input region.
+
+
+The main output file to be looked at is .sgRNAs.txt. The columns in this file are sequence id, sgRNA start position (from 5' end of the input sequence if + strand or 3' end if - strand), sgRNA end position, sgRNA id, sgRNA sequence, efficiency score, off-target potential (OTP) score. Higher the efficiency score and lower the OTP score is better.
 
 
 Additionally, SgTiler generates graphical representation of distribution of sgRNA for each individual input region. Combining the overall statistics, user can predict the success of the screening.
